@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "348848227802",
+    "project_id": "fir-authlab4-b8097",
+    "storage_bucket": "fir-authlab4-b8097.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348848227802:android:fad5f361cf269cfc1dace3",
+        "android_client_info": {
+          "package_name": "com.lab4.firebaseauthlab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCONfOM02N0f3LLjaj5MpOej011_mu-pkc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

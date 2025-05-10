@@ -1,20 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// App.js
+import React from 'react';
+import { StatusBar } from 'expo-status-bar'; // Cho phép tùy chỉnh thanh trạng thái
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Import các provider và navigator (chúng ta sẽ tạo các file này sau)
+import { AuthenticatedUserProvider } from './providers'; // Đường dẫn sẽ được tạo
+import { RootNavigator } from './navigation'; // thay vì './navigation/RootNavigator'
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthenticatedUserProvider>
+      <SafeAreaProvider>
+        <RootNavigator />
+        <StatusBar style="auto" /> {/* Hoặc "light", "dark" tùy theo theme */}
+      </SafeAreaProvider>
+    </AuthenticatedUserProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
