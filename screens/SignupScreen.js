@@ -28,30 +28,79 @@ const signupValidationSchema = Yup.object().shape({
 const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  // ... useTogglePasswordVisibility ...
 
-  const {
-    passwordVisibility,
-    rightIcon,
-    handlePasswordVisibility,
-    confirmPasswordVisibility,
-    confirmPasswordIcon,
-    handleConfirmPasswordVisibility,
+   const {
+    passwordVisibility,          
+    rightIcon,                   
+    handlePasswordVisibility,    
+    confirmPasswordVisibility,   
+    confirmPasswordIcon,         
+    handleConfirmPasswordVisibility 
   } = useTogglePasswordVisibility();
 
-  const handleSignup = async (values) => {
+    const handleSignup = async (values, { resetForm }) => {
     setIsLoading(true);
+    setErrorState('');
+    setSignupSuccess(false);
     const { email, password } = values;
+
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
-      // Đăng ký thành công, Firebase onAuthStateChanged trong RootNavigator sẽ phát hiện user mới
-      // và tự động chuyển sang AppStack. Tuy nhiên, theo yêu cầu của Lab4_FirebaseAuth.pdf 
-      // và yeucau_lab4.txt là "Chuyển về màn hình Login sau khi đăng ký thành công",
-      // chúng ta sẽ navigate về Login.
-      console.log('Signup successful, navigating to Login');
-      navigation.navigate('Login'); // Chuyển về Login sau khi đăng ký
-    } catch (error) {
-      setErrorState(error.message);
-      Alert.alert('Signup Error', error.message);
+      // 1. Tạo người dùng
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      console.log('User account created successfully!', userCredential.user.uid);
+
+      // 2. Gửi email xác nhận tài khoản
+      // `userCredential.user` chính là user object vừa được tạo
+      if (userCredential.user) {
+        try {
+          await userCredential.user.sendEmailVerification();
+          console.log('Verification email sent to:', userCredential.user.email);
+        } catch (verificationError) {
+          console.error('Error sending verification email:', verificationError);
+          // nhưng thường thì việc đăng ký vẫn được coi là thành công.
+          setErrorState('Account created, but failed to send verification email. Please try logging in.');
+        }
+      }
+
+      // 3. Đăng xuất người dùng vừa tạo ngay lập tức (để họ phải login lại sau khi xác nhận, hoặc theo yêu cầu lab là về Login)
+      if (auth().currentUser) {
+        await auth().signOut();
+        console.log('User signed out immediately after creation and email verification sent.');
+      }
+
+      // 4. Đánh dấu đăng ký thành công, reset form và thông báo
+      setSignupSuccess(true);
+      resetForm();
+
+      Alert.alert(
+        'Signup Successful!',
+        `Your account has been created and a verification email has been sent to ${email}. Please verify your email before logging in.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('Login');
+              setSignupSuccess(false);
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+
+    } catch (error) { // Lỗi từ createUserWithEmailAndPassword
+      let friendlyErrorMessage = error.message;
+      if (error.code === 'auth/email-already-in-use') {
+        friendlyErrorMessage = 'This email address is already in use by another account.';
+      } else if (error.code === 'auth/invalid-email') {
+        friendlyErrorMessage = 'The email address is not valid.';
+      } else if (error.code === 'auth/weak-password') {
+        friendlyErrorMessage = 'The password is too weak. It must be at least 6 characters long.';
+      } else {
+        friendlyErrorMessage = 'An unexpected error occurred during signup. Please try again.';
+      }
+      setErrorState(friendlyErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +120,7 @@ const SignupScreen = ({ navigation }) => {
           <Formik
             initialValues={{ email: '', password: '', confirmPassword: '' }}
             validationSchema={signupValidationSchema}
-            onSubmit={values => handleSignup(values)}
+            onSubmit={(values, formikActions) => handleSignup(values, formikActions)}
           >
             {({
               handleChange,

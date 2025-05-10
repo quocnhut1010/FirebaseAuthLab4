@@ -7,7 +7,7 @@ const FormErrorMessage = ({ error, visible }) => {
   if (!error || !visible) {
     return null;
   }
-
+  
   return <Text style={styles.errorText}>{error}</Text>;
 };
 

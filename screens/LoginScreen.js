@@ -1,69 +1,100 @@
 // screens/LoginScreen.js
-import React, { useState } from 'react'; // Thêm useState
-import { View, Text, StyleSheet, Alert } from 'react-native'; // Thêm Alert
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert, Platform } from 'react-native'; // Thêm Platform nếu bạn dùng trong styles hoặc logic khác
 import { Formik } from 'formik';
-import * as Yup from 'yup'; // Thư viện Yup để validation
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Xử lý bàn phím
+import * as Yup from 'yup';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { Button, TextInput, Logo, FormErrorMessage, LoadingIndicator } from '../components'; // Import thêm các component
-import { Colors, Images } from '../config'; // Import Colors và Images
-import { useTogglePasswordVisibility } from '../hooks'; // Hook ẩn/hiện password
-import { auth } from '../config/firebase'; // Firebase auth
+import { Button, TextInput, Logo, FormErrorMessage, LoadingIndicator } from '../components';
+import { Colors, Images } from '../config';
+import { useTogglePasswordVisibility } from '../hooks';
+import { auth } from '../config/firebase';
 
 // Schema validation với Yup
 const loginValidationSchema = Yup.object().shape({
   email: Yup.string()
-    .label('Email') // Nhãn cho thông báo lỗi
-    .email('Enter a valid email') // Kiểm tra định dạng email
-    .required('Please enter a registered email'), // Bắt buộc nhập
+    .label('Email')
+    .email('Enter a valid email')
+    .required('Please enter your email address'),
   password: Yup.string()
     .label('Password')
-    .required('Please enter your password') // Bắt buộc nhập
-    .min(6, 'Password must have at least 6 characters '), // Độ dài tối thiểu
+    .required('Please enter your password')
+    .min(6, 'Password must have at least 6 characters'),
 });
 
 const LoginScreen = ({ navigation }) => {
-  const [errorState, setErrorState] = useState(''); // State để lưu lỗi từ Firebase
-  const [isLoading, setIsLoading] = useState(false); // State cho loading indicator
+  const [errorState, setErrorState] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const { passwordVisibility, rightIcon, handlePasswordVisibility } =
-    useTogglePasswordVisibility(); // Sử dụng hook
+    useTogglePasswordVisibility();
 
   const handleLogin = async (values) => {
-    setIsLoading(true); // Bắt đầu loading
+    setIsLoading(true);
+    setErrorState(''); // Reset lỗi cũ khi bắt đầu một lần thử mới
     const { email, password } = values;
     try {
       await auth().signInWithEmailAndPassword(email, password);
       // Đăng nhập thành công, RootNavigator sẽ tự động chuyển sang AppStack
-      // không cần navigation.navigate('Home') ở đây vì onAuthStateChanged sẽ xử lý
-      console.log('Login successful');
+      console.log('Login successful for user:', email);
     } catch (error) {
-      setErrorState(error.message); // Hiển thị lỗi từ Firebase
-      // Ví dụ một số mã lỗi phổ biến từ Firebase Auth:
-      // error.code === 'auth/user-not-found' -> Tài khoản không tồn tại
-      // error.code === 'auth/wrong-password' -> Sai mật khẩu
-      // error.code === 'auth/invalid-email' -> Email không hợp lệ
-      Alert.alert('Login Error', error.message); // Hiển thị lỗi bằng Alert
+      let friendlyErrorMessage = 'Login failed. Please check your credentials or network connection and try again.'; // Thông báo mặc định chung hơn
+
+      // --- Dòng DEBUG quan trọng ---
+      console.log('--- Firebase Login Error ---');
+      console.log('Error Code:', error.code);
+      console.log('Error Message:', error.message);
+      console.log('---------------------------');
+      // --- Kết thúc dòng DEBUG ---
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          friendlyErrorMessage = 'No account found with this email. Would you like to sign up?';
+          break;
+        case 'auth/wrong-password':
+          friendlyErrorMessage = 'Incorrect password. Please try again or consider resetting your password.';
+          break;
+        case 'auth/invalid-email': // Thường cho định dạng email sai, không phải email không tồn tại
+          friendlyErrorMessage = 'The email address format is not valid.';
+          break;
+        case 'auth/invalid-credential':
+          friendlyErrorMessage = 'Invalid email or password. Please double-check and try again.';
+          break;
+        case 'auth/user-disabled':
+          friendlyErrorMessage = 'This account has been disabled. Please contact support.';
+          break;
+        case 'auth/too-many-requests':
+          friendlyErrorMessage = 'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.';
+          break;
+        default:
+          // Nếu không có case nào khớp, friendlyErrorMessage sẽ giữ giá trị mặc định đã đặt ở trên.
+          // Hoặc bạn có thể hiển thị error.message gốc từ Firebase nếu muốn, nhưng nó có thể không thân thiện:
+          // friendlyErrorMessage = error.message;
+          break;
+      }
+      setErrorState(friendlyErrorMessage); // Cập nhật state để FormErrorMessage hiển thị
+      Alert.alert('Login Error', friendlyErrorMessage); // Tùy chọn: có thể bỏ Alert nếu FormErrorMessage đã đủ
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flexGrow: 1 }} // Quan trọng để scroll hoạt động đúng
-        keyboardShouldPersistTaps="handled" // Xử lý tap khi bàn phím mở
-        enableOnAndroid={true} // Bật cho Android
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
       >
         <View style={styles.container}>
-          <Logo uri={Images.logo} style={styles.logo} /> {/* Hiển thị Logo */}
+          <Logo uri={Images.logo} style={styles.logo} />
           <Text style={styles.screenTitle}>Welcome back!</Text>
 
           <Formik
             initialValues={{ email: '', password: '' }}
-            validationSchema={loginValidationSchema} // Áp dụng schema validation
-            onSubmit={values => handleLogin(values)} // Hàm xử lý khi submit form
+            validationSchema={loginValidationSchema}
+            onSubmit={values => handleLogin(values)}
           >
             {({
               handleChange,
@@ -72,7 +103,7 @@ const LoginScreen = ({ navigation }) => {
               values,
               errors,
               touched,
-              isValid, // Kiểm tra form có valid không
+              isValid,
             }) => (
               <>
                 <TextInput
@@ -85,7 +116,6 @@ const LoginScreen = ({ navigation }) => {
                   value={values.email}
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
-                  // autoFocus={true} // Tự động focus vào trường này
                 />
                 <FormErrorMessage error={errors.email} visible={touched.email} />
 
@@ -95,10 +125,10 @@ const LoginScreen = ({ navigation }) => {
                   placeholder="Enter password"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  secureTextEntry={passwordVisibility} // Sử dụng state từ hook
+                  secureTextEntry={passwordVisibility}
                   textContentType="password"
-                  rightIconName={rightIcon} // Sử dụng icon từ hook
-                  onRightIconPress={handlePasswordVisibility} // Hàm xử lý từ hook
+                  rightIconName={rightIcon}
+                  onRightIconPress={handlePasswordVisibility}
                   value={values.password}
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
@@ -114,8 +144,8 @@ const LoginScreen = ({ navigation }) => {
                   title="Login"
                   onPress={handleSubmit}
                   style={styles.loginButton}
-                  disabled={!isValid || isLoading} // Disable nút nếu form không valid hoặc đang loading
-                  loading={isLoading} // Hiển thị loading trên nút
+                  disabled={!isValid || isLoading}
+                  loading={isLoading}
                 />
               </>
             )}
@@ -124,7 +154,7 @@ const LoginScreen = ({ navigation }) => {
           <Button
             title="Create a new account?"
             onPress={() => navigation.navigate('Signup')}
-            variant="outlined" // Sử dụng variant 'outlined' cho nút này
+            variant="outlined"
             style={styles.navButton}
             textStyle={styles.navButtonText}
           />
@@ -137,18 +167,22 @@ const LoginScreen = ({ navigation }) => {
           />
         </View>
       </KeyboardAwareScrollView>
-      <LoadingIndicator visible={isLoading} /> {/* Hiển thị loading overlay */}
+      <LoadingIndicator visible={isLoading} />
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
-    backgroundColor: Colors.white, // Màu nền
+    backgroundColor: Colors.white,
     paddingHorizontal: 20,
-    paddingVertical: 20, // Thêm padding dọc
-    justifyContent: 'center', // Căn giữa nội dung theo chiều dọc
+    paddingVertical: 20,
+    justifyContent: 'center',
   },
   logo: {
     width: 120,
@@ -164,16 +198,16 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   loginButton: {
-    marginTop: 16, // Thêm khoảng cách trên cho nút Login
+    marginTop: 16,
   },
   navButton: {
     marginTop: 10,
-    backgroundColor: 'transparent', // Nền trong suốt cho nút điều hướng
-    borderColor: 'transparent', // Bỏ viền cho nút điều hướng
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   },
   navButtonText: {
-    color: Colors.primary, // Màu chữ cho nút điều hướng
-    fontWeight: 'normal', // Bỏ bold
+    color: Colors.primary,
+    fontWeight: 'normal',
     fontSize: 15,
   },
 });

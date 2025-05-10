@@ -1,4 +1,4 @@
-// App.js
+// // App.js
 import React from 'react';
 import { StatusBar } from 'expo-status-bar'; // Cho phép tùy chỉnh thanh trạng thái
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ export default function App() {
     <AuthenticatedUserProvider>
       <SafeAreaProvider>
         <RootNavigator />
-        <StatusBar style="auto" /> {/* Hoặc "light", "dark" tùy theo theme */}
+        <StatusBar style="auto" />
       </SafeAreaProvider>
     </AuthenticatedUserProvider>
   );
