@@ -1,0 +1,50 @@
+{
+  "loginScreen": {
+    "welcome": "Welcome back!",
+    "emailPlaceholder": "Enter email",
+    "passwordPlaceholder": "Enter password",
+    "loginButton": "Login",
+    "createAccountButton": "Create a new account?",
+    "forgotPasswordButton": "Forgot Password?",
+    "errorUserNotFound": "No account found with this email. Would you like to sign up?",
+    "errorWrongPassword": "Incorrect password. Please try again or consider resetting your password.",
+    "errorInvalidEmail": "The email address format is not valid.",
+    "errorInvalidCredential": "Invalid email or password. Please double-check and try again.",
+    "errorUserDisabled": "This account has been disabled. Please contact support.",
+    "errorTooManyRequests": "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.",
+    "loginFailedDefault": "Login failed. Please check your credentials or network connection and try again."
+  },
+  "signupScreen": {
+    "title": "Create a new account!",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "signupButton": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?"
+  },
+  "forgotPasswordScreen": {
+    "title": "Reset your password",
+    "sendResetEmailButton": "Send Reset Email",
+    "goBackButton": "Go back to Login",
+    "emailSentSuccess": "Password reset email sent successfully. Please check your inbox.",
+    "emailSentError": "Failed to send password reset email. Please try again."
+  },
+  "homeScreen": {
+    "title": "Home",
+    "signOutButton": "Sign Out"
+  },
+  "validation": {
+    "emailRequired": "Please enter your email address",
+    "emailInvalid": "Enter a valid email",
+    "passwordRequired": "Please enter your password",
+    "passwordMinLength": "Password must have at least 6 characters",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsDoNotMatch": "Passwords do not match"
+  },
+  "settingsScreen": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "currentLanguage": "Current Language: {{lang}}",
+    "switchToEnglish": "Switch to English",
+    "switchToVietnamese": "Switch to Vietnamese"
+  }
+}

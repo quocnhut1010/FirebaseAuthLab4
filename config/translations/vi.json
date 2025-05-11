@@ -1,0 +1,50 @@
+{
+  "loginScreen": {
+    "welcome": "Chào mừng trở lại!",
+    "emailPlaceholder": "Nhập email",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "loginButton": "Đăng nhập",
+    "createAccountButton": "Tạo tài khoản mới?",
+    "forgotPasswordButton": "Quên mật khẩu?",
+    "errorUserNotFound": "Không tìm thấy tài khoản với email này. Bạn có muốn đăng ký không?",
+    "errorWrongPassword": "Sai mật khẩu. Vui lòng thử lại hoặc cân nhắc đặt lại mật khẩu.",
+    "errorInvalidEmail": "Định dạng địa chỉ email không hợp lệ.",
+    "errorInvalidCredential": "Email hoặc mật khẩu không hợp lệ. Vui lòng kiểm tra lại và thử lại.",
+    "errorUserDisabled": "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.",
+    "errorTooManyRequests": "Truy cập vào tài khoản này đã tạm thời bị vô hiệu hóa do nhiều lần đăng nhập không thành công. Bạn có thể khôi phục ngay bằng cách đặt lại mật khẩu hoặc thử lại sau.",
+    "loginFailedDefault": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập hoặc kết nối mạng và thử lại."
+  },
+  "signupScreen": {
+    "title": "Tạo tài khoản mới!",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+    "signupButton": "Đăng ký",
+    "alreadyHaveAccount": "Đã có tài khoản?"
+  },
+  "forgotPasswordScreen": {
+    "title": "Đặt lại mật khẩu của bạn",
+    "sendResetEmailButton": "Gửi email đặt lại",
+    "goBackButton": "Quay lại Đăng nhập",
+    "emailSentSuccess": "Email đặt lại mật khẩu đã được gửi thành công. Vui lòng kiểm tra hộp thư của bạn.",
+    "emailSentError": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại."
+  },
+  "homeScreen": {
+    "title": "Trang chủ",
+    "signOutButton": "Đăng xuất"
+  },
+  "validation": {
+    "emailRequired": "Vui lòng nhập địa chỉ email của bạn",
+    "emailInvalid": "Nhập một địa chỉ email hợp lệ",
+    "passwordRequired": "Vui lòng nhập mật khẩu của bạn",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu của bạn",
+    "passwordsDoNotMatch": "Mật khẩu không khớp"
+  },
+  "settingsScreen": {
+    "title": "Cài đặt",
+    "language": "Ngôn ngữ",
+    "theme": "Giao diện",
+    "currentLanguage": "Ngôn ngữ hiện tại: {{lang}}",
+    "switchToEnglish": "Chuyển sang Tiếng Anh",
+    "switchToVietnamese": "Chuyển sang Tiếng Việt"
+  }
+}
